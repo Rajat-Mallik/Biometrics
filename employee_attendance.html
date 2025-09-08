@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employee Punch System</title>
+  <style>
+    :root{
+      --bg-1: #0f172a;
+      --card: #ffffff;
+      --accent1: #06b6d4;
+      --accent2: #3b82f6;
+      --muted: #6b7280;
+    }
+    *{box-sizing:border-box}
+    body {
+      margin: 0;
+      font-family: Inter, 'Segoe UI', Roboto, system-ui, -apple-system, 'Helvetica Neue', Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(59,130,246,0.12), transparent),
+                  linear-gradient(180deg, #071227 0%, #0f172a 100%);
+      color: #0f172a;
+      min-height: 100vh;
+      -webkit-font-smoothing:antialiased;
+    }
+    header{
+      padding: 12px 1rem;
+      text-align:center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(90deg, var(--accent2), var(--accent1));
+      box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+    }
+    .hdr-inner{display:flex;align-items:center;gap:12px;justify-content:center;max-width:1100px;margin:0 auto}
+    .fingerprint{
+      width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);backdrop-filter: blur(4px);
+      box-shadow: 0 6px 18px rgba(2,6,23,0.3);
+      overflow:hidden;
+    }
+    .fingerprint img{width:44px;height:44px;object-fit:cover;display:block}
+    .title{font-weight:700;font-size:1.2rem;letter-spacing:0.6px}
+    .sub{font-size:0.85rem;opacity:0.9;color:rgba(255,255,255,0.9)}
+
+    .container{
+      max-width:900px;margin: -28px auto 40px;padding:14px;background:var(--card);border-radius:14px;box-shadow:0 18px 40px rgba(2,6,23,0.45);
+      display:block;
+    }
+
+    .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center;margin-bottom:14px}
+    button{
+      border: none;padding:12px 18px;border-radius:10px;font-weight:700;cursor:pointer;font-size:0.98rem;letter-spacing:0.3px;
+      transition:transform .18s,box-shadow .18s;width:auto;display:inline-flex;align-items:center;justify-content:center;
+    }
+    button:active{transform:translateY(1px)}
+    .in{background:linear-gradient(180deg,#10b981,#34d399);color:white;box-shadow:0 10px 24px rgba(16,185,129,0.18)}
+    .out{background:linear-gradient(180deg,#ef4444,#ff7a7a);color:white;box-shadow:0 10px 24px rgba(239,68,68,0.16)}
+    .reset{background:linear-gradient(180deg,#64748b,#94a3b8);color:white;box-shadow:0 10px 24px rgba(100,116,139,0.12)}
+
+    .status{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg, #f8fafc, #eef2ff);box-shadow:inset 0 2px 8px rgba(2,6,23,0.03);
+      margin-bottom:12px;font-weight:700;color:var(--bg-1);
+    }
+    .status-left{display:flex;gap:12px;align-items:center}
+    .status-dot{width:12px;height:12px;border-radius:50%;background:#ef4444;box-shadow:0 6px 18px rgba(239,68,68,0.18)}
+    .status-dot.in{background:#10b981;box-shadow:0 6px 18px rgba(16,185,129,0.18)}
+    .big-time{font-family: 'Courier New',monospace;font-size:1.05rem;background:linear-gradient(90deg,#eef2ff,#ffffff);padding:6px 10px;border-radius:8px;min-width:110px;text-align:center}
+
+    table{width:100%;border-collapse:collapse;border-radius:10px;overflow:hidden}
+    thead th{background:linear-gradient(90deg,#0ea5e9,#6366f1);color:white;font-weight:700;padding:12px;text-align:center}
+    tbody td{background:linear-gradient(180deg,#ffffff,#fbfdff);padding:10px;text-align:center;border-bottom:1px solid rgba(15,23,42,0.04)}
+    input[type=time]{border:0;background:transparent;font-size:1rem;text-align:center;padding:6px;width:100%}
+
+    .muted{color:var(--muted);font-weight:600}
+
+    @media (max-width:720px){
+      .hdr-inner{flex-direction:column}
+      .status{flex-direction:column;align-items:flex-start}
+      .controls{flex-direction:column;align-items:stretch}
+      button{flex:1;width:100%}
+      .fingerprint{width:48px;height:48px}
+      .fingerprint img{width:36px;height:36px}
+      .big-time{min-width:100px}
+    }
+
+    /* fingerprint animation */
+    @keyframes pulse {
+      0%{transform:scale(1);opacity:1}
+      70%{transform:scale(1.08);opacity:0.75}
+      100%{transform:scale(1);opacity:1}
+    }
+    .fingerprint{animation: pulse 3.2s ease-in-out infinite}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hdr-inner">
+      <div class="fingerprint" aria-hidden="true">
+        <!-- user-provided biometric PNG -->
+        <img src="https://i.ibb.co/qMHVkXxX/Fingerprint-icon.png" alt="Biometric Icon" style="width:100px; height:100px; border-radius:100%; object-fit:cover;"/>
+      </div>
+      <div>
+        <div class="title">Employee Punch System</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" role="main">
+    <div class="controls" style="margin-top: 25px;">
+      <button class="in" id="punchInBtn" onclick="punchIn()">Punch In</button>
+      <button class="out" id="punchOutBtn" onclick="punchOut()">Punch Out</button>
+      <button class="reset" onclick="resetRecords()">Reset</button>
+    </div>
+
+    <div class="status" id="status">
+      <div class="status-left">
+        <div id="statusDot" class="status-dot muted"></div>
+        <div id="statusText">Not Punched In</div>
+      </div>
+      <div class="big-time" id="totalTime">00:00:00</div>
+    </div>
+
+    <!-- simplified table: removed date column for mobile friendliness -->
+    <div style="overflow:auto;">
+      <table id="recordsTable" aria-label="Punch records">
+        <thead>
+          <tr>
+            <th>Punch In</th>
+            <th>Punch Out</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    // --- state ---
+    let records = JSON.parse(localStorage.getItem('records') || '[]');
+    let currentIdx = null; // index of the open record in records, or null
+    let timer = null;
+
+    function normalizeTime(val){
+      if(!val) return '';
+      const parts = val.split(':');
+      if(parts.length === 2) return parts[0].padStart(2,'0') + ':' + parts[1].padStart(2,'0') + ':00';
+      if(parts.length === 3) return parts[0].padStart(2,'0') + ':' + parts[1].padStart(2,'0') + ':' + parts[2].padStart(2,'0');
+      return '';
+    }
+
+    function parseTimeToSeconds(timeStr){
+      if(!timeStr) return null;
+      const parts = timeStr.split(':').map(x => Number(x));
+      if(parts.length < 2 || parts.some(isNaN)) return null;
+      const h = parts[0] || 0;
+      const m = parts[1] || 0;
+      const s = parts[2] || 0;
+      return h*3600 + m*60 + s;
+    }
+
+    function formatSeconds(sec){
+      if(isNaN(sec) || sec < 0) sec = 0;
+      sec = Math.floor(sec);
+      const h = String(Math.floor(sec/3600)).padStart(2,'0');
+      const m = String(Math.floor((sec%3600)/60)).padStart(2,'0');
+      const s = String(sec%60).padStart(2,'0');
+      return `${h}:${m}:${s}`;
+    }
+
+    function save(){
+      localStorage.setItem('records', JSON.stringify(records));
+      renderTable();
+      refreshState();
+    }
+
+    // find last open record (punchIn set but no punchOut)
+    function initCurrent(){
+      currentIdx = null;
+      for(let i = records.length - 1; i >=0; i--){
+        if(records[i].punchIn && (!records[i].punchOut || records[i].punchOut.trim() === '')){ currentIdx = i; break; }
+      }
+    }
+
+    function punchIn(){
+      initCurrent();
+      if(currentIdx !== null){ alert('Already punched in. Please punch out first.'); return; }
+      const now = new Date();
+      const rec = {
+        // keep date in data for reference but we don't display it
+        date: now.toISOString().split('T')[0],
+        punchIn: normalizeTime(now.toTimeString().substring(0,8)),
+        punchOut: ''
+      };
+      records.push(rec);
+      save();
+    }
+
+    function punchOut(){
+      initCurrent();
+      if(currentIdx === null){ alert('Not punched in.'); return; }
+      const now = new Date();
+      records[currentIdx].punchOut = normalizeTime(now.toTimeString().substring(0,8));
+      currentIdx = null;
+      save();
+    }
+
+    function updateRecord(i, field, rawVal){
+      const val = normalizeTime(rawVal);
+      records[i][field] = val;
+      // if user left punchOut empty string intentionally, keep as ''
+      if(val === '') records[i][field] = '';
+      save();
+    }
+
+    function calculateTotalSeconds(){
+      let total = 0;
+      const now = new Date();
+      const nowSecs = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+
+      for(const r of records){
+        if(!r.punchIn) continue;
+        const inSecs = parseTimeToSeconds(r.punchIn);
+        if(inSecs === null) continue;
+        let outSecs = null;
+        if(r.punchOut && r.punchOut.trim() !== ''){
+          outSecs = parseTimeToSeconds(r.punchOut);
+        } else {
+          outSecs = nowSecs; // running
+        }
+        if(outSecs === null) continue;
+        // if out earlier than in, assume next day
+        if(outSecs < inSecs) outSecs += 24*3600;
+        const diff = outSecs - inSecs;
+        if(diff > 0) total += diff;
+      }
+      return total;
+    }
+
+    function renderTable(){
+      const tbody = document.querySelector('#recordsTable tbody');
+      tbody.innerHTML = '';
+      records.forEach((r,i) => {
+        const tr = document.createElement('tr');
+        const inVal = r.punchIn || '';
+        const outVal = r.punchOut || '';
+        tr.innerHTML = `
+          <td><input type="time" step="1" value="${inVal}" onchange="updateRecord(${i}, 'punchIn', this.value)"></td>
+          <td><input type="time" step="1" value="${outVal}" onchange="updateRecord(${i}, 'punchOut', this.value)"></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function refreshState(){
+      initCurrent();
+      const totalSecs = calculateTotalSeconds();
+      document.getElementById('totalTime').textContent = formatSeconds(totalSecs);
+
+      const statusText = document.getElementById('statusText');
+      const dot = document.getElementById('statusDot');
+
+      if(currentIdx !== null){
+        dot.classList.remove('muted'); dot.classList.add('in');
+        const pin = records[currentIdx].punchIn || '';
+        statusText.textContent = 'Punched In at ' + pin;
+        startTimer();
+      } else {
+        dot.classList.remove('in'); dot.classList.add('muted');
+        statusText.textContent = 'Not Punched In';
+        stopTimer();
+      }
+
+      // also ensure correct button visibility
+      document.getElementById('punchInBtn').style.display = currentIdx === null ? 'inline-flex' : 'none';
+      document.getElementById('punchOutBtn').style.display = currentIdx !== null ? 'inline-flex' : 'none';
+    }
+
+    function startTimer(){
+      if(timer) return;
+      timer = setInterval(() => { document.getElementById('totalTime').textContent = formatSeconds(calculateTotalSeconds()); }, 1000);
+    }
+    function stopTimer(){ if(timer){ clearInterval(timer); timer = null; }}
+
+    function resetRecords(){
+      if(!confirm('Reset all records? This cannot be undone.')) return;
+      records = [];
+      currentIdx = null;
+      save();
+    }
+
+    // expose for inline handlers (required because functions called from HTML attributes)
+    window.punchIn = punchIn;
+    window.punchOut = punchOut;
+    window.updateRecord = updateRecord;
+    window.resetRecords = resetRecords;
+
+    // init
+    renderTable();
+    refreshState();
+  </script>
+</body>
+</html>
