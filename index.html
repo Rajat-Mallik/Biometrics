@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Employee Punch System</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="css/style.css">
+<meta name="theme-color" content="#0369a1"/>
+</head>
+<body>
+  <header class="app-header" style="margin-bottom: 30px;">
+    <div class="hdr-inner">
+      <div class="fingerprint"><img src="https://i.ibb.co/qMHVkXxX/Fingerprint-icon.png" alt="Biometric Icon" style="width:50px; height:50px; border-radius:50%; object-fit:cover;"></div>
+      <div class="titles"><div class="title">Employees Biometrics System</div><div class="sub">Installable · Works offline · Device-local data</div></div>
+    </div>
+  </header>
+
+  <main class="container" role="main">
+    <div class="controls">
+      <button id="punchInBtn" class="btn in" onclick="punchIn()">Punch In</button>
+      <button id="punchOutBtn" class="btn out" onclick="punchOut()">Punch Out</button>
+      <!-- <button id="exportBtn" class="btn neutral" onclick="exportCSV()">Export CSV</button> -->
+      <button id="resetBtn" class="btn reset" onclick="resetRecords()">Reset</button>
+    </div>
+
+    <div class="status" id="status">
+      <div class="status-left"><div id="statusDot" class="dot muted"></div><div id="statusText">Not Punched In</div></div>
+      <div class="big-time" id="totalTime">00:00:00</div>
+    </div>
+
+    <div class="tablewrap">
+      <table id="recordsTable" aria-label="Punch records">
+        <thead><tr><th>Punch In</th><th>Punch Out</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer class="app-footer">© 2025 Rajat Malik. All rights reserved.</footer>
+
+<script src="js/app.js"></script>
+</body>
+</html>
