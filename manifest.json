@@ -1,0 +1,15 @@
+{
+  "name": "Employee Punch System",
+  "short_name": "Punch",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0369a1",
+  "icons": [
+    {
+      "src": "assets/fingerprint.svg",
+      "sizes": "128x128",
+      "type": "image/svg+xml"
+    }
+  ]
+}
